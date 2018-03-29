@@ -56,6 +56,22 @@ func main() {
 	r.GET("/fw/:file", DeliverFirmwareFile)
 	r.GET("/spiffs/:file", DeliverSpiffsFile)
 
+	serveProteus := lib.GetBoolFromConfig("serveProteus")
+	if serveProteus {
+
+		wwwwRoot := lib.GetStringFromConfig("folder.www") + "/"
+
+		r.StaticFile("/index.html", wwwwRoot + "index.html")
+		r.StaticFile("/default.html", wwwwRoot + "index.html")
+		r.StaticFile("/mntsrt.css", wwwwRoot + "mntsrt.css")
+		r.StaticFile("/mntsrt-b.woff2", wwwwRoot + "mntsrt-b.woff2")
+		r.StaticFile("/mntsrt-r.woff2", wwwwRoot + "mntsrt-r.woff2")
+		r.StaticFile("/siimple.css", wwwwRoot + "siimple.css")
+		r.StaticFile("/siimple-colors.css", wwwwRoot + "siimple-colors.css")
+		r.StaticFile("/ttbl.json", wwwwRoot + "ttbl.json")
+		r.StaticFile("/zepto.min.js", wwwwRoot + "zepto.min.js")
+	}
+
 	//e.GET("/assets/*", echo.WrapHandler(http.StripPrefix("/assets/", assetHandler)))
 	//e.GET("/", s.get403)
 

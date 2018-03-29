@@ -55,6 +55,10 @@ func GetStringFromConfig(key string) string {
 	return viper.GetString(key)
 }
 
+func GetBoolFromConfig(key string) bool {
+
+	return viper.GetBool(key)
+}
 func GetIntFromConfig(key string) int {
 
 	return viper.GetInt(key)
@@ -75,9 +79,11 @@ var defaultConfig = []byte(`
       "host": "127.0.0.1",
       "port": "8081"
   },
+  "serveProteus": "true",
   "folder": {
     "firmware": "firmware",
-    "spiffs": "spiffs"
+    "spiffs": "spiffs",
+    "www": "www"
   },
   "db": {
     "dialect": "sqlite3",
