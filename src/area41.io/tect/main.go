@@ -70,6 +70,11 @@ func main() {
 		r.StaticFile("/siimple-colors.css", wwwwRoot + "siimple-colors.css")
 		r.StaticFile("/ttbl.json", wwwwRoot + "ttbl.json")
 		r.StaticFile("/zepto.min.js", wwwwRoot + "zepto.min.js")
+
+		// throttle to have the client show the loading info
+		r.GET("/api/config", GetConfig)
+		r.POST("/api/config", SetConfig)
+		r.GET("/api/hwinfo", getHWInfo)
 	}
 
 	//e.GET("/assets/*", echo.WrapHandler(http.StripPrefix("/assets/", assetHandler)))
@@ -82,6 +87,38 @@ func main() {
 
 	r.Run(host + ":" + port) // listen and serve
 
+}
+
+func GetConfig(c *gin.Context) {
+
+	var json = []byte(`
+{
+    "nickname": "Uberh4x0r"
+}
+`)
+
+	c.String(http.StatusOK, "application/json; charset=utf-8", json)
+}
+
+func SetConfig(c *gin.Context) {
+
+	c.String(http.StatusOK, "application/json; charset=utf-8", "")
+}
+
+func getHWInfo(c *gin.Context) {
+
+	var json = []byte(`
+{
+    "hwinfo": {
+        "restart_reason": "hard reset",
+        "free_heap": "12"
+	}
+}
+`)
+
+	c.Writer.WriteHeader(http.StatusOK)
+	c.Writer.Header().Set("Content-Type", "application/json; charset=utf-8")
+	c.Writer.Write(json)
 }
 
 func DeliverFirmwareFile(c *gin.Context) {
