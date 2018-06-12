@@ -61,6 +61,7 @@ func main() {
 
 		wwwwRoot := lib.GetStringFromConfig("folder.www") + "/"
 
+		r.StaticFile("/", wwwwRoot + "index.html")
 		r.StaticFile("/index.html", wwwwRoot + "index.html")
 		r.StaticFile("/default.html", wwwwRoot + "index.html")
 		r.StaticFile("/mntsrt.css", wwwwRoot + "mntsrt.css")
@@ -93,14 +94,23 @@ func GetConfig(c *gin.Context) {
 
 	var json = []byte(`
 {
-    "nickname": "Uberh4x0r"
+  "nickname": "31337 h4x0r",
+  "softAPSSID": "auto",
+  "softAPPSK": "auto"
 }
 `)
 
-	c.String(http.StatusOK, "application/json; charset=utf-8", json)
+	c.Writer.WriteHeader(http.StatusOK)
+	c.Writer.Header().Set("Content-Type", "application/json; charset=utf-8")
+	c.Writer.Write(json)
 }
 
 func SetConfig(c *gin.Context) {
+
+	// Better check it with binding, but works for now...
+	x, _ := ioutil.ReadAll(c.Request.Body)
+
+	fmt.Printf("Request body: %s\n", string(x))
 
 	c.String(http.StatusOK, "application/json; charset=utf-8", "")
 }
@@ -187,6 +197,11 @@ func deliverFile(c *gin.Context, folder string) {
 
 	fmt.Printf("hash: %v\n", hash)
 
+	mode := c.GetHeader("x-ESP8266-mode")
+	fmt.Printf("mode requested: %s\n", mode) // spiffs or sketch
+
+	// TODO: we check the hash of the sketch, not of the spiffs
+	// how should we handle the spiffs check?
 	md5Header := c.GetHeader("x-esp8266-sketch-md5")
 	if md5Header == hash {
 
@@ -199,7 +214,7 @@ func deliverFile(c *gin.Context, folder string) {
 		return
 	}
 
-	fmt.Printf("hash did change, delivering new firmware\n")
+	fmt.Printf("hash did change, delivering new firmware or spiffs\n")
 
 	c.Header("Content-Description", "File Transfer")
 	c.Header("Content-Transfer-Encoding", "binary")
